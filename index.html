@@ -3,43 +3,339 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dino Complex</title>
-
+    <title>Sonali e-Wallet UI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            margin: 0;
-            height: 100vh;
+        * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #f4f5f7; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        
+        .app-container {
+            width: 100%;
+            max-width: 414px;
+            background-color: #f7f8fa;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding-bottom: 80px;
+        }
+
+        /* Header UI */
+        .top-header {
+            background: linear-gradient(to bottom, #e4af12, #d8a30a);
+            padding: 20px 15px 45px 15px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .app-title { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 18px; }
+        
+        /* Balance Card */
+        .balance-card-wrapper {
+            margin: -30px 15px 15px 15px;
+            background: #0d5ca4;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .balance-toggle-box {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-toggle {
+            flex: 1;
+            padding: 10px 5px;
+            border-radius: 6px;
+            border: 1px solid #ffffffa0;
+            background: transparent;
+            color: white;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-toggle.active { background: rgba(255,255,255,0.2); }
+        .balance-display {
+            color: #fff;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Grid Services */
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 10px 15px;
+        }
+        .service-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 5px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            cursor: pointer;
+        }
+        .service-item i { font-size: 24px; margin-bottom: 8px; color: #0d5ca4; display: block; }
+        .service-item span { font-size: 12px; color: #444; font-weight: 500; }
+
+        /* Bottom Nav Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 414px;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #eee;
+        }
+        .nav-link { text-align: center; color: #777; text-decoration: none; font-size: 11px; flex: 1; }
+        .nav-link i { font-size: 18px; display: block; margin-bottom: 2px; }
+        .nav-link.active { color: #d8a30a; }
+        
+        .qr-btn {
+            background: #e4af12;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            background: white;
-            font-family: Arial, sans-serif;
-        }
-
-        .button {
-            display: inline-block;
-            padding: 18px 30px;
-            background: red;
             color: white;
-            font-size: 22px;
-            font-weight: bold;
-            border-radius: 12px;
-            text-decoration: none;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+            font-size: 20px;
+            margin-top: -25px;
+            border: 4px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
 
-        .button:active {
-            transform: scale(0.95);
+        /* Views (Pages) */
+        .view-page { display: block; }
+        .hidden { display: none !important; }
+
+        /* Send Money Form UI */
+        .form-container { padding: 20px; background: white; margin: 15px; border-radius: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: bold; color: #333; }
+        .operator-selector { display: flex; gap: 10px; }
+        .op-box {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .op-box.selected-bkash { border-color: #e2136e; color: #e2136e; background: #fdebf2; }
+        .op-box.selected-nagad { border-color: #f7941d; color: #f7941d; background: #fff4e8; }
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: #0d5ca4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Loader & Alert UI */
+        .loader-box { text-align: center; padding: 40px 20px; }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0d5ca4;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .alert-box {
+            background: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: center;
         }
     </style>
 </head>
-
 <body>
 
-    <a class="button" href="https://imageupload.io/f/7BlkJye8.jpg" target="_blank">
-        জারা দিনো ফ্যান তারা এখানে ক্লিক করুন
-    </a>
+<div class="app-container">
+    
+    <!-- Top Bar -->
+    <div class="top-header">
+        <div class="app-title">
+            <i class="fa-solid fa-sun"></i> Sonali e-Wallet
+        </div>
+        <i class="fa-regular fa-bell" style="font-size: 18px;"></i>
+    </div>
+
+    <!-- PAGE 1: DASHBOARD VIEW -->
+    <div id="dashboard-view" class="view-page">
+        <!-- Balance Card -->
+        <div class="balance-card-wrapper">
+            <div class="balance-toggle-box">
+                <button class="btn-toggle" onclick="showBalance()">Bank Balance</button>
+                <button class="btn-toggle">Wallet Balance</button>
+            </div>
+            <div id="balance-amount" class="balance-display">৳ 150,432.00</div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="service-grid">
+            <div class="service-item"><i class="fa-solid fa-building-columns"></i><span>E-Bank</span></div>
+            <div class="service-item"><i class="fa-solid fa-file-invoice-dollar"></i><span>Bill Pay</span></div>
+            <div class="service-item"><i class="fa-solid fa-mobile-screen-button"></i><span>Recharge</span></div>
+            
+            <div class="service-item" onclick="openSendMoney()"><i class="fa-solid fa-paper-plane"></i><span>Send Money</span></div>
+            <div class="service-item"><i class="fa-regular fa-credit-card"></i><span>Cards</span></div>
+            <div class="service-item"><i class="fa-solid fa-vault"></i><span>DPS & FDR</span></div>
+            
+            <div class="service-item"><i class="fa-solid fa-right-left"></i><span>BEFTN</span></div>
+            <div class="service-item"><i class="fa-solid fa-shield-halved"></i><span>Sonali eSheba</span></div>
+            <div class="service-item"><i class="fa-solid fa-hand-holding-dollar"></i><span>Remittance</span></div>
+            
+            <div class="service-item"><i class="fa-solid fa-arrows-rotate"></i><span>Binimoy</span></div>
+            <div class="service-item"><i class="fa-solid fa-network-wired"></i><span>NPSB</span></div>
+            <div class="service-item"><i class="fa-solid fa-grid-2"></i><span>Services</span></div>
+        </div>
+    </div>
+
+    <!-- PAGE 2: SEND MONEY FORM VIEW -->
+    <div id="send-money-view" class="view-page hidden">
+        <div class="form-container">
+            <h3 style="margin-bottom: 15px; color: #0d5ca4;">Send Money</h3>
+            
+            <div class="form-group">
+                <label>মেথড সিলেক্ট করুন:</label>
+                <div class="operator-selector">
+                    <div id="op-bkash" class="op-box" onclick="selectOperator('bkash')">bKash</div>
+                    <div id="op-nagad" class="op-box" onclick="selectOperator('nagad')">Nagad</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>নম্বর বসান:</label>
+                <input type="number" id="phone-number" class="input-field" placeholder="01XXXXXXXXX">
+            </div>
+
+            <button class="btn-submit" onclick="startProcess()">Next</button>
+            <button class="btn-submit" style="background: #777; margin-top: 10px;" onclick="goBack()">Back</button>
+        </div>
+    </div>
+
+    <!-- PAGE 3: LOADER VIEW -->
+    <div id="loader-view" class="view-page hidden">
+        <div class="loader-box">
+            <div class="spinner"></div>
+            <p style="color: #555; font-size: 14px;">অনুগ্রহ করে অপেক্ষা করুন (১০ সেকেন্ড)...</p>
+        </div>
+    </div>
+
+    <!-- PAGE 4: ALERT RESULT VIEW -->
+    <div id="result-view" class="view-page hidden">
+        <div style="padding: 20px;">
+            <div class="alert-box">
+                এই নাম্বারে লেনদেন করতে গেলে এই নাম্বার দিয়ে মিনিমাম এখানে 500 টাকা লেনদেন থাকতে হবে।
+            </div>
+            <button class="btn-submit" style="margin-top: 20px;" onclick="goHome()">হোম পেজে ফিরে যান</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-link active" onclick="goHome()"><i class="fa-solid fa-house"></i>Home</a>
+        <a href="#" class="nav-link"><i class="fa-solid fa-chart-simple"></i>History</a>
+        <div class="qr-btn"><i class="fa-solid fa-qrcode"></i></div>
+        <a href="#" class="nav-link"><i class="fa-solid fa-arrow-right-arrow-left"></i>TP</a>
+        <a href="#" class="nav-link"><i class="fa-solid fa-bars"></i>Menu</a>
+    </div>
+
+</div>
+
+<script>
+    let selectedOperator = '';
+
+    // Show balance functionality
+    function showBalance() {
+        const balDiv = document.getElementById('balance-amount');
+        balDiv.style.display = balDiv.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Navigation functions
+    function openSendMoney() {
+        hideAllViews();
+        document.getElementById('send-money-view').classList.remove('hidden');
+    }
+
+    function goBack() {
+        hideAllViews();
+        document.getElementById('dashboard-view').classList.remove('hidden');
+    }
+
+    function goHome() {
+        hideAllViews();
+        document.getElementById('dashboard-view').classList.remove('hidden');
+        document.getElementById('phone-number').value = '';
+        selectedOperator = '';
+        document.getElementById('op-bkash').className = 'op-box';
+        document.getElementById('op-nagad').className = 'op-box';
+    }
+
+    function hideAllViews() {
+        document.querySelectorAll('.view-page').forEach(view => view.classList.add('hidden'));
+    }
+
+    // Select Bkash/Nagad
+    function selectOperator(type) {
+        selectedOperator = type;
+        document.getElementById('op-bkash').className = 'op-box' + (type === 'bkash' ? ' selected-bkash' : '');
+        document.getElementById('op-nagad').className = 'op-box' + (type === 'nagad' ? ' selected-nagad' : '');
+    }
+
+    // Process submission with 10-second timer
+    function startProcess() {
+        const num = document.getElementById('phone-number').value;
+        if(!selectedOperator) {
+            alert('দয়া করে বিকাশ বা নগদ নির্বাচন করুন');
+            return;
+        }
+        if(!num) {
+            alert('দয়া করে নম্বর প্রদান করুন');
+            return;
+        }
+
+        hideAllViews();
+        document.getElementById('loader-view').classList.remove('hidden');
+
+        // 10 Seconds Timer
+        setTimeout(function() {
+            hideAllViews();
+            document.getElementById('result-view').classList.remove('hidden');
+        }, 10000);
+    }
+</script>
 
 </body>
-</html>
+    </html>
+                    
