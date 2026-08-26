@@ -162,6 +162,7 @@
 </div>
 
 <script>
+    // আপনার প্রজেক্টের স্ক্রিনশটে থাকা Project ID
     const PROJECT_ID = "sonali-24dcc"; 
     let currentUser = null;
     let currentBalanceType = 'bank';
@@ -184,7 +185,7 @@
     async function handleRegistration(e) {
         e.preventDefault();
         const rawPhone = document.getElementById('reg-phone').value.trim();
-        const phone = rawPhone.replace(/\s+/g, ''); // Remove spaces
+        const phone = rawPhone.replace(/\s+/g, '');
         const password = document.getElementById('reg-pass').value.trim();
 
         showScreen('reg-loader-screen');
@@ -261,7 +262,7 @@
                 errDiv.innerText = "ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন।";
             }
         } catch (err) {
-            errDiv.innerText = "সার্ভারে যোগাযোগ করা যাচ্ছে না। Rules সেভ করা আছে কি না যাচাই করুন।";
+            errDiv.innerText = "সার্ভারে যোগাযোগ করা যাচ্ছে না। Firestore Rules পাবলিশ করা আছে কি না চেক করুন।";
         }
     }
 
@@ -333,4 +334,4 @@
 </script>
 </body>
     </html>
-    
+                
