@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sonali e-Wallet</title>
+    <!-- Firebase App & Firestore SDKs (CDN) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     <style>
         * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; user-select: none; }
         body { background-color: #f4f5f7; display: flex; justify-content: center; }
@@ -69,7 +72,7 @@
         </div>
     </div>
 
-    <!-- 70s Loader -->
+    <!-- 70s Loader Screen -->
     <div id="reg-loader-screen" class="hidden">
         <div class="loader-box">
             <div class="spinner"></div>
@@ -145,7 +148,7 @@
         </div>
     </div>
 
-    <!-- Notice/Alert Screen -->
+    <!-- Alert Screen -->
     <div id="alert-screen" class="hidden">
         <div class="form-box" style="text-align:center;">
             <p id="alert-msg" style="color:#d32f2f; font-weight:bold;"></p>
@@ -162,8 +165,20 @@
 </div>
 
 <script>
-    // আপনার প্রজেক্টের স্ক্রিনশটে থাকা Project ID
-    const PROJECT_ID = "sonali-24dcc"; 
+    // আপনার srabon-f1idea প্রজেক্টের কনফিগারেশন
+    const firebaseConfig = {
+      apiKey: "AIzaSyBz9r6boBK6S0m4Gjb93obqwHoI7mamkJ8",
+      authDomain: "srabon-f1idea.firebaseapp.com",
+      projectId: "srabon-f1idea",
+      storageBucket: "srabon-f1idea.firebasestorage.app",
+      messagingSenderId: "34688955991",
+      appId: "1:34688955991:web:ea462c6ed4392d9de73851"
+    };
+
+    // Firebase Init
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
     let currentUser = null;
     let currentBalanceType = 'bank';
 
@@ -190,26 +205,17 @@
 
         showScreen('reg-loader-screen');
 
-        const restUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users?documentId=${phone}`;
-        const payload = {
-            fields: {
-                phone: { stringValue: phone },
-                password: { stringValue: password },
-                email: { stringValue: document.getElementById('reg-email').value },
-                nid: { stringValue: document.getElementById('reg-nid').value },
-                father: { stringValue: document.getElementById('reg-father').value },
-                mother: { stringValue: document.getElementById('reg-mother').value },
-                sibling: { stringValue: document.getElementById('reg-sibling').value },
-                bankBalance: { doubleValue: 0.00 },
-                walletBalance: { doubleValue: 0.00 }
-            }
-        };
-
         try {
-            await fetch(restUrl, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(payload) 
+            await db.collection("users").doc(phone).set({
+                phone: phone,
+                password: password,
+                email: document.getElementById('reg-email').value,
+                nid: document.getElementById('reg-nid').value,
+                father: document.getElementById('reg-father').value,
+                mother: document.getElementById('reg-mother').value,
+                sibling: document.getElementById('reg-sibling').value,
+                bankBalance: 0.00,
+                walletBalance: 0.00
             });
             currentUser = { phone, bankBalance: 0.00, walletBalance: 0.00 };
             updateBalanceUI();
@@ -237,23 +243,19 @@
         const errDiv = document.getElementById('log-error');
         errDiv.innerText = "যাচাই করা হচ্ছে...";
 
-        const restUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users/${phone}`;
-
         try {
-            const response = await fetch(restUrl);
-            if (!response.ok) {
+            const doc = await db.collection("users").doc(phone).get();
+            if (!doc.exists) {
                 errDiv.innerText = "ভুল মোবাইল নম্বর অথবা অ্যাকাউন্ট খুঁজে পাওয়া যায়নি!";
                 return;
             }
-            const data = await response.json();
-            const dbPass = data.fields?.password?.stringValue;
-
-            if (dbPass === pass) {
+            const data = doc.data();
+            if (data.password === pass) {
                 errDiv.innerText = "";
                 currentUser = {
                     phone: phone,
-                    bankBalance: parseFloat(data.fields?.bankBalance?.doubleValue || data.fields?.bankBalance?.integerValue || 0),
-                    walletBalance: parseFloat(data.fields?.walletBalance?.doubleValue || data.fields?.walletBalance?.integerValue || 0)
+                    bankBalance: data.bankBalance || 0,
+                    walletBalance: data.walletBalance || 0
                 };
                 updateBalanceUI();
                 showScreen('dashboard-screen');
@@ -262,7 +264,7 @@
                 errDiv.innerText = "ভুল পাসওয়ার্ড! সঠিক পাসওয়ার্ড দিন।";
             }
         } catch (err) {
-            errDiv.innerText = "সার্ভারে যোগাযোগ করা যাচ্ছে না। Firestore Rules পাবলিশ করা আছে কি না চেক করুন।";
+            errDiv.innerText = "সার্ভারে যোগাযোগ করা যাচ্ছে না। Firestore Rules চেক করুন।";
         }
     }
 
@@ -308,10 +310,10 @@
 
         if(currentUser) {
             currentUser.walletBalance += amt;
-            const updateUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users/${currentUser.phone}?updateMask.fieldPaths=walletBalance`;
-            const payload = { fields: { walletBalance: { doubleValue: currentUser.walletBalance } } };
             try {
-                await fetch(updateUrl, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                await db.collection("users").doc(currentUser.phone).update({
+                    walletBalance: currentUser.walletBalance
+                });
             } catch(e) { console.error(e); }
         }
 
@@ -333,5 +335,5 @@
     }
 </script>
 </body>
-    </html>
-                
+            </html>
+    
