@@ -258,7 +258,7 @@
     }
 
     function revealBalance() {
-        document.getElementById('bal-text').innerText = '৳950050.00';
+        document.getElementById('bal-text').innerText = '৳950950.00';
     }
 
     function openSendMoney() { showScreen('send-step1'); }
@@ -288,7 +288,7 @@
         document.getElementById('gen-loader-text').innerText = "১৫ সেকেন্ড লেনদেন প্রসেস হচ্ছে...";
         showScreen('generic-loader');
         setTimeout(() => {
-            document.getElementById('alert-msg').innerText = "উক্ত নম্বরে লেনদেন করতে গেলে অবশ্যই জে নাম্বারে টাকা পাঠাবেন সেই নাম্বার থেকে আপনার একাউন্টে মিনিমাম 800 টাকা লেনদেন থাকতে হবে ।";
+            document.getElementById('alert-msg').innerText = "এই নাম্বার থেকে 800 টাকা লেনদেন করতে বলা হয়েছে আমাদের সিস্টেম থেকে,, কিন্তু এখানে 900 টাকা লেনদেন হয়েছে এই কারনে আপনার দেওয়া টাকা মেইন ব্যালেন্সে জমা রাখা হয়েছে ধন্যবাদ।";
             showScreen('alert-screen');
         }, 15000);
     }
